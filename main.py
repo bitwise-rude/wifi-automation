@@ -10,8 +10,10 @@ load_dotenv()
 
 USERNAME = os.getenv("SSID")
 PASSWORD = os.getenv("PASSWORD")
+
 TOKEN_URL = "https://subscribers.beta.gispaas.geniussystems.com.np/subscriber/authentication/v1/tenants/13/subscribers/access-token"
 INFO_URL = "https://subscribers.beta.gispaas.geniussystems.com.np/subscriber/account/v1/tenants/13/subscribers/detail"
+PASSWORD_CHANGE_URL = "https://ftth.beta.gispaas.geniussystems.com.np/subscriber/ftth/v2/tenants/13/acs/-/subscriber-service/120368"
 
 
 def show_error_and_quit(e:Exception|str) -> None:
@@ -99,21 +101,44 @@ def get_data(bearer:str) -> None:
         safe_print("Upload Speed (bps)", subscription.get("up"))
         safe_print("Download Speed (bps)", subscription.get("down"))
 
+def change_password(bearer:str, new_password:str) -> None:
+    _headers = {
+    "accept": "application/json, text/plain, */*",
+    "content-type": "application/json",
+    "authorization": f"Bearer {bearer}",
+    "origin": "https://wifinepal.gispaas.geniussystems.com.np",
+    "referer": "https://wifinepal.gispaas.geniussystems.com.np/",
+    "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36",
+    }
+
+    _payload = {
+        "ssid_2": {
+            "ssid": USERNAME,
+            "wifi_password": new_password,
+            "wifi_enabled": True,
+            "ssid_broadcast": True
+        }
+    }
+
+
+    try:
+        requests.patch(
+            PASSWORD_CHANGE_URL,
+            headers=_headers,
+            data=json.dumps(_payload),
+            timeout=25
+        )
+    except Exception as e:
+        show_error_and_quit(e)
+
+    print(f"[PASSWORD SUCCESFULLY CHANGED TO: {new_password}]")
 
 
 
 bearer = get_bearer()
 get_data(bearer)
 
-
-quit()
-
-# for password change
-#######https://ftth.beta.gispaas.geniussystems.com.np/subscriber/ftth/v2/tenants/13/acs/-/subscriber-service/120368
-
-URL = "https://ftth.beta.gispaas.geniussystems.com.np/subscriber/ftth/v2/tenants/13/acs/-/subscriber-service/120368"
-bearer = access_token
-
+# Does the user really wanna change the password?
 ans = input("Do you want to change the Wi-Fi password? (yes/no): ").strip().lower()
 if ans != "yes":
     print("Aborted. No request sent.")
@@ -126,37 +151,7 @@ if confirm != "YES":
     print("Cancelled.")
     sys.exit(0)
 
-headers = {
-    "accept": "application/json, text/plain, */*",
-    "content-type": "application/json",
-    "authorization": f"Bearer {bearer}",
-    "origin": "https://wifinepal.gispaas.geniussystems.com.np",
-    "referer": "https://wifinepal.gispaas.geniussystems.com.np/",
-    "user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36",
-}
-
-payload = {
-    "ssid_2": {
-        "ssid": USERNAME,
-        "wifi_password": password,
-        "wifi_enabled": True,
-        "ssid_broadcast": True
-    }
-}
-
-
-
-resp = requests.patch(
-    URL,
-    headers=headers,
-    data=json.dumps(payload),
-    timeout=25
-)
-
-print(resp.status_code)
-print(resp.json())
-print("CHANGED")
-
+change_password(bearer,password)
 
     
 

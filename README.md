@@ -21,6 +21,7 @@ generated from your password and get information and change password, SSID easil
 4. Create a `.env` file in the same directory
 5. Create field `SSID = "<your ssid>"` and `PASSWORD = "<your password>"` and 
 save the file
+6. OR you can go to `main.py` and change the variables `PASSWORD` to password and `USERNAME` to SSID respectively to accomplish the goal of above point.
 6. Run the script `main.py`
 
 viola! now you can use the script again and again without having to update
@@ -28,5 +29,5 @@ authentication always
 
 ### Keep in mind that the password you save in the environment file is your login password
 
-> Code is shit because it is mixture of mine and chatgpt's code.  I will fix it later if I added more stuff 
+
 

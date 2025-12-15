@@ -4,41 +4,49 @@ import sys
 from dotenv import load_dotenv
 import os 
 
+
+#===================================
 load_dotenv()
 USERNAME = os.getenv("SSID")
 PASSWORD = os.getenv("PASSWORD")
+TOKEN_URL = "https://subscribers.beta.gispaas.geniussystems.com.np/subscriber/authentication/v1/tenants/13/subscribers/access-token"
+INFO_URL = "https://subscribers.beta.gispaas.geniussystems.com.np/subscriber/account/v1/tenants/13/subscribers/detail"
 
-
-# for token
-URL = "https://subscribers.beta.gispaas.geniussystems.com.np/subscriber/authentication/v1/tenants/13/subscribers/access-token"
-
-payload = {
-    "username": USERNAME,
-    "password": PASSWORD
-}
-
-headers = {
+HEADERS = {
     "Accept": "application/json",
     "Content-Type": "application/json",
     "User-Agent": "Mozilla/5.0"
 }
 
-response = requests.post(URL, json=payload, headers=headers)
+def show_error_and_quit(e:Exception|str) -> None:
+    print(e)
+    print("\n\nFIX ERROR AND TRY AGAIN\n")
+    sys.exit(1)
 
+def get_bearer() -> str:
+    ''' Gets the bearer/access token necassary for further works'''
 
+    _payload = {
+    "username": USERNAME,
+    "password": PASSWORD
+    }
 
-data = response.json()
+    try:
+        _response = requests.post(TOKEN_URL, json=_payload, headers=HEADERS)
+    except Exception as e:
+        show_error_and_quit(e)
 
-access_token = data.get("access_token")
-token_type = data.get("token_type")
-expires_in = data.get("expires_in")
-refresh_token = data.get("refresh_token")
+    data = _response.json()
 
-print("\n===== GOT TOKEN INFO =====")
+    access_token = data.get("access_token")
+    if access_token:
+        return access_token
+    else:
+        show_error_and_quit("Couldn't Recieve access token")
+
 
 # for data
 
-url = "https://subscribers.beta.gispaas.geniussystems.com.np/subscriber/account/v1/tenants/13/subscribers/detail"
 
 headers = {
     "Accept": "application/json, text/plain, */*",

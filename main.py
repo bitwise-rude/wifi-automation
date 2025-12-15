@@ -5,14 +5,16 @@ from dotenv import load_dotenv
 import os 
 
 load_dotenv()
+USERNAME = os.getenv("SSID")
+PASSWORD = os.getenv("PASSWORD")
 
 
 # for token
 URL = "https://subscribers.beta.gispaas.geniussystems.com.np/subscriber/authentication/v1/tenants/13/subscribers/access-token"
 
 payload = {
-    "username": os.getenv("SSID"),
-    "password": os.getenv("PASSWORD")
+    "username": USERNAME,
+    "password": PASSWORD
 }
 
 headers = {
@@ -131,7 +133,7 @@ headers = {
 
 payload = {
     "ssid_2": {
-        "ssid": "kushal50_wnepal",
+        "ssid": USERNAME,
         "wifi_password": password,
         "wifi_enabled": True,
         "ssid_broadcast": True
